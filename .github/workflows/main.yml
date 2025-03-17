@@ -64,9 +64,13 @@ jobs:
         echo "{ \"features\": { \"containerd-snapshotter\": true }}" | sudo tee /etc/docker/daemon.json
         sudo systemctl restart docker
         docker info -f '{{ .DriverStatus }}'
-
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+      with:
+        platforms: all
     - name: Load binfmt platforms for QEMU
       run: |
+        docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
         docker run --privileged --rm tonistiigi/binfmt --install all
         docker images --tree
 
